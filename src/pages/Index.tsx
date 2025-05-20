@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ReviewDataProvider } from '@/contexts/ReviewDataContext';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
@@ -7,7 +6,6 @@ import { LocationChart } from '@/components/dashboard/LocationChart';
 import { TimelineChart } from '@/components/dashboard/TimelineChart';
 import { WordCloud } from '@/components/dashboard/WordCloud';
 import { RecentReviews } from '@/components/dashboard/RecentReviews';
-import { JsonUploader } from '@/components/dashboard/JsonUploader';
 
 const Index = () => {
   return (
@@ -22,10 +20,6 @@ const Index = () => {
           <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
             <div className="space-y-8">
               <DashboardHeader />
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <JsonUploader />
-              </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <RatingChart />
