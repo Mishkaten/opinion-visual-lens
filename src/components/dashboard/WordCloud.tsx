@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useReviewData } from '@/contexts/ReviewDataContext';
 
 export const WordCloud = () => {
-  const { reviews } = useReviewData();
+  const { reviews, isLoading } = useReviewData();
   
   // Process review text to generate word frequency
   const wordFrequency = useMemo(() => {
@@ -66,21 +66,27 @@ export const WordCloud = () => {
         <CardTitle>Word Cloud</CardTitle>
       </CardHeader>
       <CardContent className="min-h-[300px] flex items-center justify-center p-6">
-        <div className="flex flex-wrap justify-center gap-3">
-          {wordFrequency.map(([word, count]) => (
-            <span
-              key={word}
-              className={`${getWordColor(count)} font-medium px-1`}
-              style={{ 
-                fontSize: `${calculateFontSize(count)}px`,
-                transform: `rotate(${Math.random() * 20 - 10}deg)`,
-                display: 'inline-block'
-              }}
-            >
-              {word}
-            </span>
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <div className="flex flex-wrap justify-center gap-3">
+            {wordFrequency.map(([word, count]) => (
+              <span
+                key={word}
+                className={`${getWordColor(count)} font-medium px-1`}
+                style={{ 
+                  fontSize: `${calculateFontSize(count)}px`,
+                  transform: `rotate(${Math.random() * 20 - 10}deg)`,
+                  display: 'inline-block'
+                }}
+              >
+                {word}
+              </span>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

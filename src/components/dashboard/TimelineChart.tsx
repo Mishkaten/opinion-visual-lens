@@ -5,7 +5,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useReviewData } from '@/contexts/ReviewDataContext';
 
 export const TimelineChart = () => {
-  const { reviews } = useReviewData();
+  const { reviews, isLoading } = useReviewData();
   
   // Process data for chart
   // First, parse dates and group by year-month
@@ -38,28 +38,34 @@ export const TimelineChart = () => {
         <CardTitle>Rating Trend Over Time</CardTitle>
       </CardHeader>
       <CardContent className="h-[300px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={chartData}
-            margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-            <XAxis dataKey="date" />
-            <YAxis domain={[0, 5]} />
-            <Tooltip 
-              contentStyle={{ background: '#fff', border: '1px solid #ddd' }}
-              formatter={(value) => [`${value}`, 'Avg. Rating']}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="avgRating" 
-              stroke="#7209B7" 
-              strokeWidth={2} 
-              dot={{ r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={chartData}
+              margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+              <XAxis dataKey="date" />
+              <YAxis domain={[0, 5]} />
+              <Tooltip 
+                contentStyle={{ background: '#fff', border: '1px solid #ddd' }}
+                formatter={(value) => [`${value}`, 'Avg. Rating']}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="avgRating" 
+                stroke="#7209B7" 
+                strokeWidth={2} 
+                dot={{ r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );

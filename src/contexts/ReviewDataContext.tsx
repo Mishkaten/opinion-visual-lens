@@ -1,5 +1,6 @@
 
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useState } from 'react';
+import { toast } from '@/components/ui/use-toast';
 
 export interface Review {
   Author: string;
@@ -12,6 +13,8 @@ export interface Review {
 
 interface ReviewDataContextType {
   reviews: Review[];
+  setReviews: (reviews: Review[]) => void;
+  isLoading: boolean;
 }
 
 const initialReviews: Review[] = [
@@ -44,10 +47,31 @@ const initialReviews: Review[] = [
 const ReviewDataContext = createContext<ReviewDataContextType | undefined>(undefined);
 
 export function ReviewDataProvider({ children }: { children: ReactNode }) {
-  const reviews = initialReviews;
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleSetReviews = (newReviews: Review[]) => {
+    setIsLoading(true);
+    try {
+      setReviews(newReviews);
+      toast({
+        title: "Data loaded successfully",
+        description: `${newReviews.length} reviews have been processed.`,
+      });
+    } catch (error) {
+      console.error("Error setting reviews:", error);
+      toast({
+        title: "Error loading data",
+        description: "An error occurred while processing the reviews.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <ReviewDataContext.Provider value={{ reviews }}>
+    <ReviewDataContext.Provider value={{ reviews, setReviews: handleSetReviews, isLoading }}>
       {children}
     </ReviewDataContext.Provider>
   );
