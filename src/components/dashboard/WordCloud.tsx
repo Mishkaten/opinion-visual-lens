@@ -1,7 +1,9 @@
-
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useReviewData } from '@/contexts/ReviewDataContext';
+import ReactWordcloud from 'react-wordcloud';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/animations/scale.css';
 
 export const WordCloud = () => {
   const { reviews, isLoading } = useReviewData();
@@ -32,32 +34,28 @@ export const WordCloud = () => {
     return Object.entries(frequency)
       .filter(([_, count]) => count > 1) // Only include words that appear more than once
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 30); // Take top 30 words
+      .slice(0, 25) // fewer words for clarity
+      .map(([text, value]) => ({ text, value }));
   }, [reviews]);
 
-  // Calculate the maximum frequency for scaling
-  const maxFrequency = wordFrequency.length > 0 
-    ? wordFrequency[0][1] 
-    : 1;
+  // Reference-like color palette (greens, browns)
+  const colors = [
+    '#4e8c2b', '#7bb661', '#b7d7a8', '#d9ead3', '#b6a16b', '#a67c52', '#6b4226', '#8d5524', '#c68642', '#e0ac69', '#f1c232', '#6aa84f', '#38761d', '#274e13', '#b45f06', '#783f04', '#a61c00', '#990000', '#cc0000', '#e69138', '#f6b26b', '#ffd966', '#fff2cc', '#b7b7b7', '#666666'
+  ];
 
-  // Calculate font sizes between 14 and 42px based on frequency
-  const calculateFontSize = (frequency: number) => {
-    const minSize = 14;
-    const maxSize = 42;
-    return minSize + ((frequency / maxFrequency) * (maxSize - minSize));
-  };
-
-  // Generate colors based on frequency
-  const getWordColor = (frequency: number) => {
-    const colors = [
-      'text-dashboard-blue',
-      'text-dashboard-purple',
-      'text-dashboard-light-blue',
-      'text-dashboard-pink',
-      'text-dashboard-indigo'
-    ];
-    const index = Math.floor((frequency / maxFrequency) * (colors.length - 1));
-    return colors[index];
+  // Improved wordcloud options
+  const options = {
+    rotations: 6,
+    rotationAngles: [0, 90, 45, -45, 30, -30],
+    fontSizes: [24, 72],
+    fontFamily: 'Impact, Arial Black, sans-serif',
+    colors,
+    enableTooltip: true,
+    deterministic: true,
+    scale: 'sqrt',
+    spiral: 'archimedean',
+    transitionDuration: 800,
+    padding: 8, // more padding
   };
 
   return (
@@ -65,26 +63,17 @@ export const WordCloud = () => {
       <CardHeader>
         <CardTitle>Word Cloud</CardTitle>
       </CardHeader>
-      <CardContent className="min-h-[300px] flex items-center justify-center p-6">
+      <CardContent className="min-h-[600px] flex items-center justify-center p-6">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-3">
-            {wordFrequency.map(([word, count]) => (
-              <span
-                key={word}
-                className={`${getWordColor(count)} font-medium px-1`}
-                style={{ 
-                  fontSize: `${calculateFontSize(count)}px`,
-                  transform: `rotate(${Math.random() * 20 - 10}deg)`,
-                  display: 'inline-block'
-                }}
-              >
-                {word}
-              </span>
-            ))}
+          <div className="w-full h-[560px]">
+            <ReactWordcloud
+              words={wordFrequency}
+              options={options}
+            />
           </div>
         )}
       </CardContent>
